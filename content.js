@@ -1,4 +1,4 @@
-// ChillMode — Content Script
+// Decaf — Content Script
 // Detects breathless tweets and rewrites them via Ollama or Claude API
 
 (function () {
@@ -297,19 +297,19 @@ ${text}`,
       rewrittenText = cache[cacheKey].text;
     } else {
       // Apply blur while loading
-      tweetTextEl.classList.add("chillmode-loading");
+      tweetTextEl.classList.add("decaf-loading");
 
       try {
         rewrittenText = await rewriteText(originalText, settings, score);
         await setCache(cacheKey, rewrittenText);
       } catch (err) {
-        console.error("[ChillMode] Rewrite failed:", err);
-        tweetTextEl.classList.remove("chillmode-loading");
+        console.error("[Decaf] Rewrite failed:", err);
+        tweetTextEl.classList.remove("decaf-loading");
         tweetTextEl.removeAttribute(PROCESSED_ATTR);
         return;
       }
 
-      tweetTextEl.classList.remove("chillmode-loading");
+      tweetTextEl.classList.remove("decaf-loading");
     }
 
     // Store original for toggle
@@ -319,13 +319,13 @@ ${text}`,
 
     // Replace text content while preserving structure
     tweetTextEl.innerText = rewrittenText;
-    tweetTextEl.classList.add("calm-feed-rewritten", "chillmode-rewritten");
+    tweetTextEl.classList.add("calm-feed-rewritten", "decaf-rewritten");
 
     // Add indicator
     const indicator = document.createElement("span");
     indicator.className = "calm-feed-indicator";
     indicator.textContent = " \u{1F33F}";
-    indicator.title = "Rewritten by ChillMode \u2014 click to toggle original";
+    indicator.title = "Rewritten by Decaf \u2014 click to toggle original";
     indicator.addEventListener("click", (e) => {
       e.stopPropagation();
       e.preventDefault();

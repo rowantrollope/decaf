@@ -1,4 +1,4 @@
-/* ChillMode — Content Script Styles */
+/* Decaf — Content Script Styles */
 
 .calm-feed-rewritten {
   border-left: 2px solid #4a7c5940;
@@ -24,12 +24,12 @@
   opacity: 1;
 }
 
-.chillmode-loading {
+.decaf-loading {
   filter: blur(2px);
   transition: filter 0.3s ease;
 }
 
-.chillmode-rewritten {
+.decaf-rewritten {
   filter: none;
   transition: filter 0.3s ease;
 }

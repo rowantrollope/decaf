@@ -1,4 +1,4 @@
-# ChillMode 🌿
+# Decaf 🌿
 
 A browser extension that rewrites breathless, FOMO-inducing X posts into calm, grounded, factual text. Keep the signal. Lose the anxiety.
 
@@ -36,7 +36,7 @@ A browser extension that rewrites breathless, FOMO-inducing X posts into calm, g
 
 Requires Xcode:
 ```bash
-xcrun safari-web-extension-converter /path/to/chillmode
+xcrun safari-web-extension-converter /path/to/decaf
 ```
 Open the generated Xcode project, build it, then enable in Safari → Settings → Extensions.
 

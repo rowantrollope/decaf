@@ -1,4 +1,4 @@
-// ChillMode — Options Page
+// Decaf — Options Page
 
 document.addEventListener("DOMContentLoaded", () => {
   const providerSelect = document.getElementById("provider");

@@ -1,4 +1,4 @@
-// ChillMode — Popup
+// Decaf — Popup
 
 document.addEventListener("DOMContentLoaded", () => {
   const enabledToggle = document.getElementById("enabled");
