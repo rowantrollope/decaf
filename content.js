@@ -1,5 +1,5 @@
-// Calm Feed — Content Script
-// Detects breathless tweets and rewrites them via Claude API
+// ChillMode — Content Script
+// Detects breathless tweets and rewrites them via Ollama or Claude API
 
 (function () {
   "use strict";
@@ -8,6 +8,7 @@
   const DEFAULT_THRESHOLD = 3;
   const CACHE_KEY = "calmFeedCache";
   const MAX_CACHE_ENTRIES = 500;
+  const OLLAMA_PROXY = "http://localhost:11435";
 
   // ── Breathlessness Detector ──────────────────────────────────────────
 
@@ -149,17 +150,23 @@
     await chrome.storage.local.set({ [CACHE_KEY]: cache });
   }
 
-  // ── Claude API ───────────────────────────────────────────────────────
+  // ── Ollama API ───────────────────────────────────────────────────────
 
-  async function getSettings() {
-    const result = await chrome.storage.sync.get({
-      apiKey: "",
-      threshold: DEFAULT_THRESHOLD,
-      enabled: true,
-      model: "claude-sonnet-4-20250514",
+  async function rewriteWithOllama(text, model) {
+    const response = await fetch(`${OLLAMA_PROXY}/api/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: model,
+        prompt: `You are a calm, grounded editor. Rewrite this breathless social media post into calm, factual text. Keep ALL the information. Remove hype, urgency, superlatives, FOMO framing. Add epistemic hedging where appropriate ("claims to", "reportedly"). Return ONLY the rewritten text.\n\nPost: ${text}`,
+        stream: false,
+      }),
     });
-    return result;
+    const data = await response.json();
+    return data.response;
   }
+
+  // ── Claude API ───────────────────────────────────────────────────────
 
   async function rewriteWithClaude(text, apiKey, model) {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -201,6 +208,67 @@ ${text}`,
     return data.content[0].text;
   }
 
+  // ── Ollama availability check ────────────────────────────────────────
+
+  let ollamaAvailable = null;
+
+  async function checkOllamaAvailable() {
+    try {
+      const res = await fetch(OLLAMA_PROXY, { method: "GET", signal: AbortSignal.timeout(2000) });
+      ollamaAvailable = res.ok;
+    } catch {
+      ollamaAvailable = false;
+    }
+    return ollamaAvailable;
+  }
+
+  // ── Settings ─────────────────────────────────────────────────────────
+
+  async function getSettings() {
+    const result = await chrome.storage.sync.get({
+      apiKey: "",
+      threshold: DEFAULT_THRESHOLD,
+      enabled: true,
+      model: "claude-sonnet-4-20250514",
+      provider: "auto",
+      ollamaModel: "llama3.2:3b",
+      customOllamaModel: "",
+    });
+    return result;
+  }
+
+  function resolveOllamaModel(settings, score) {
+    if (settings.ollamaModel === "custom" && settings.customOllamaModel) {
+      return settings.customOllamaModel;
+    }
+    // Use higher-quality model for very breathless posts
+    if (score >= 5) return "phi4-mini";
+    return settings.ollamaModel === "custom" ? "llama3.2:3b" : settings.ollamaModel;
+  }
+
+  // ── Rewrite dispatcher ──────────────────────────────────────────────
+
+  async function rewriteText(text, settings, score) {
+    const provider = settings.provider || "auto";
+
+    if (provider === "ollama" || provider === "auto") {
+      try {
+        const model = resolveOllamaModel(settings, score);
+        return await rewriteWithOllama(text, model);
+      } catch (err) {
+        if (provider === "ollama") throw err;
+        // auto mode: fall through to Anthropic
+      }
+    }
+
+    if (provider === "anthropic" || provider === "auto") {
+      if (!settings.apiKey) throw new Error("No API key configured");
+      return await rewriteWithClaude(text, settings.apiKey, settings.model);
+    }
+
+    throw new Error("No provider available");
+  }
+
   // ── DOM Processing ───────────────────────────────────────────────────
 
   async function processTweet(tweetTextEl) {
@@ -211,7 +279,12 @@ ${text}`,
     if (!originalText || originalText.length < 20) return;
 
     const settings = await getSettings();
-    if (!settings.enabled || !settings.apiKey) return;
+    if (!settings.enabled) return;
+
+    // Need at least one provider
+    const hasOllama = settings.provider === "ollama" || settings.provider === "auto";
+    const hasAnthropic = (settings.provider === "anthropic" || settings.provider === "auto") && settings.apiKey;
+    if (!hasOllama && !hasAnthropic) return;
 
     const score = scoreBreathlessness(originalText);
     if (score < settings.threshold) return;
@@ -223,18 +296,20 @@ ${text}`,
     if (cache[cacheKey]) {
       rewrittenText = cache[cacheKey].text;
     } else {
+      // Apply blur while loading
+      tweetTextEl.classList.add("chillmode-loading");
+
       try {
-        rewrittenText = await rewriteWithClaude(
-          originalText,
-          settings.apiKey,
-          settings.model
-        );
+        rewrittenText = await rewriteText(originalText, settings, score);
         await setCache(cacheKey, rewrittenText);
       } catch (err) {
-        console.error("[Calm Feed] Rewrite failed:", err);
+        console.error("[ChillMode] Rewrite failed:", err);
+        tweetTextEl.classList.remove("chillmode-loading");
         tweetTextEl.removeAttribute(PROCESSED_ATTR);
         return;
       }
+
+      tweetTextEl.classList.remove("chillmode-loading");
     }
 
     // Store original for toggle
@@ -244,13 +319,13 @@ ${text}`,
 
     // Replace text content while preserving structure
     tweetTextEl.innerText = rewrittenText;
-    tweetTextEl.classList.add("calm-feed-rewritten");
+    tweetTextEl.classList.add("calm-feed-rewritten", "chillmode-rewritten");
 
     // Add indicator
     const indicator = document.createElement("span");
     indicator.className = "calm-feed-indicator";
-    indicator.textContent = " 🌿";
-    indicator.title = "Rewritten by Calm Feed — click to toggle original";
+    indicator.textContent = " \u{1F33F}";
+    indicator.title = "Rewritten by ChillMode \u2014 click to toggle original";
     indicator.addEventListener("click", (e) => {
       e.stopPropagation();
       e.preventDefault();
@@ -280,11 +355,35 @@ ${text}`,
     tweets.forEach((el) => processTweet(el));
   }
 
+  // ── IntersectionObserver prefetch ────────────────────────────────────
+
+  const prefetchObserver = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          prefetchObserver.unobserve(entry.target);
+          processTweet(entry.target);
+        }
+      }
+    },
+    { rootMargin: "200px" }
+  );
+
+  function observeForPrefetch(root) {
+    const tweets = root.querySelectorAll(
+      `[data-testid="tweetText"]:not([${PROCESSED_ATTR}])`
+    );
+    tweets.forEach((el) => prefetchObserver.observe(el));
+  }
+
   // ── MutationObserver ─────────────────────────────────────────────────
 
   function init() {
-    // Process existing tweets
-    scanForTweets(document);
+    // Check Ollama availability on startup
+    checkOllamaAvailable();
+
+    // Observe existing tweets for prefetch
+    observeForPrefetch(document);
 
     // Watch for new tweets loaded into the feed
     const observer = new MutationObserver((mutations) => {
@@ -296,11 +395,11 @@ ${text}`,
             node.matches &&
             node.matches(`[data-testid="tweetText"]:not([${PROCESSED_ATTR}])`)
           ) {
-            processTweet(node);
+            prefetchObserver.observe(node);
           }
           // Check children
           if (node.querySelectorAll) {
-            scanForTweets(node);
+            observeForPrefetch(node);
           }
         }
       }

@@ -1,9 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Calm Feed",
-  "version": "1.0.0",
+  "name": "ChillMode",
+  "version": "1.1.0",
   "description": "Rewrites breathless, FOMO-inducing posts on X/Twitter into calm, grounded, informative text.",
   "permissions": ["storage", "activeTab"],
+  "host_permissions": [
+    "http://localhost:11435/*"
+  ],
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

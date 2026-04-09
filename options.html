@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Calm Feed — Settings</title>
+  <title>ChillMode — Settings</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -80,13 +80,38 @@
       transition: opacity 0.3s;
     }
     .status.visible { opacity: 1; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
-  <h1>🌿 Calm Feed Settings</h1>
-  <p class="subtitle">Configure your API key and rewriting preferences.</p>
+  <h1>ChillMode Settings</h1>
+  <p class="subtitle">Configure your AI provider and rewriting preferences.</p>
 
   <div class="field">
+    <label for="provider">Provider</label>
+    <select id="provider">
+      <option value="auto">Auto (Ollama first, API fallback)</option>
+      <option value="ollama">Ollama (local, fast)</option>
+      <option value="anthropic">Anthropic API (cloud)</option>
+    </select>
+    <p class="hint">Auto tries Ollama first, then falls back to the Anthropic API.</p>
+  </div>
+
+  <div class="field" id="ollamaModelField">
+    <label for="ollamaModel">Ollama Model</label>
+    <select id="ollamaModel">
+      <option value="llama3.2:3b">llama3.2:3b (recommended)</option>
+      <option value="phi4-mini">phi4-mini (higher quality)</option>
+      <option value="custom">Custom...</option>
+    </select>
+  </div>
+
+  <div class="field hidden" id="customModelField">
+    <label for="customOllamaModel">Custom Model Name</label>
+    <input type="text" id="customOllamaModel" placeholder="e.g. mistral:7b">
+  </div>
+
+  <div class="field" id="apiKeyField">
     <label for="apiKey">Anthropic API Key</label>
     <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
     <p class="hint">Your key is stored locally and never shared. Get one at console.anthropic.com.</p>
@@ -102,7 +127,7 @@
         <option value="5">Minimal (5) — extreme hype only</option>
       </select>
     </div>
-    <div class="field">
+    <div class="field" id="claudeModelField">
       <label for="model">Claude Model</label>
       <select id="model">
         <option value="claude-haiku-4-5-20251001">Haiku 4.5 (fast, cheap)</option>

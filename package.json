@@ -1,0 +1,8 @@
+{
+  "name": "chillmode-proxy",
+  "version": "1.0.0",
+  "description": "CORS proxy for ChillMode browser extension to reach local Ollama",
+  "scripts": {
+    "start": "node proxy.js"
+  }
+}

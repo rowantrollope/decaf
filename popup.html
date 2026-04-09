@@ -21,6 +21,25 @@
       font-size: 16px;
       font-weight: 600;
     }
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid #e5e5e0;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-dot.green { background: #4a7c59; }
+    .status-dot.yellow { background: #c49440; }
+    .status-dot.red { background: #c44040; }
     .toggle-row {
       display: flex;
       align-items: center;
@@ -73,21 +92,17 @@
       padding: 4px;
     }
     a:hover { text-decoration: underline; }
-    .no-key {
-      font-size: 12px;
-      color: #c44;
-      margin-bottom: 8px;
-    }
   </style>
 </head>
 <body>
   <div class="header">
     <span>🌿</span>
-    <h1>Calm Feed</h1>
+    <h1>ChillMode</h1>
   </div>
 
-  <div id="noKey" class="no-key" style="display:none;">
-    No API key set. Open settings to add one.
+  <div class="status-indicator" id="providerStatus">
+    <span class="status-dot" id="statusDot"></span>
+    <span id="statusText">Checking...</span>
   </div>
 
   <div class="toggle-row">
