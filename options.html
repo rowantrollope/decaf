@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Calm Feed — Settings</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f5f0;
+      color: #2d2d2d;
+      padding: 40px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #1a1a1a;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+    .field {
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #444;
+    }
+    input[type="password"],
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #4a7c59;
+    }
+    .hint {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+    }
+    .field-row {
+      display: flex;
+      gap: 16px;
+    }
+    .field-row .field { flex: 1; }
+    button {
+      background: #4a7c59;
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      font-size: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    button:hover { background: #3d6a4a; }
+    .status {
+      display: inline-block;
+      margin-left: 12px;
+      font-size: 14px;
+      color: #4a7c59;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .status.visible { opacity: 1; }
+  </style>
+</head>
+<body>
+  <h1>🌿 Calm Feed Settings</h1>
+  <p class="subtitle">Configure your API key and rewriting preferences.</p>
+
+  <div class="field">
+    <label for="apiKey">Anthropic API Key</label>
+    <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
+    <p class="hint">Your key is stored locally and never shared. Get one at console.anthropic.com.</p>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="threshold">Breathlessness Threshold</label>
+      <select id="threshold">
+        <option value="2">Sensitive (2) — rewrite more posts</option>
+        <option value="3" selected>Balanced (3) — default</option>
+        <option value="4">Relaxed (4) — only the worst offenders</option>
+        <option value="5">Minimal (5) — extreme hype only</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="model">Claude Model</label>
+      <select id="model">
+        <option value="claude-haiku-4-5-20251001">Haiku 4.5 (fast, cheap)</option>
+        <option value="claude-sonnet-4-20250514" selected>Sonnet 4 (balanced)</option>
+        <option value="claude-opus-4-20250514">Opus 4 (best quality)</option>
+      </select>
+    </div>
+  </div>
+
+  <div>
+    <button id="save">Save Settings</button>
+    <span class="status" id="status">Settings saved.</span>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

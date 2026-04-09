@@ -1,0 +1,25 @@
+/* Calm Feed — Content Script Styles */
+
+.calm-feed-rewritten {
+  border-left: 2px solid #4a7c5940;
+  padding-left: 6px;
+  transition: border-color 0.3s ease;
+}
+
+.calm-feed-original {
+  border-left: 2px solid #c4944040;
+  padding-left: 6px;
+}
+
+.calm-feed-indicator {
+  cursor: pointer;
+  font-size: 14px;
+  vertical-align: middle;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  user-select: none;
+}
+
+.calm-feed-indicator:hover {
+  opacity: 1;
+}
