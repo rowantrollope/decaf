@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subscribe — Lady Whistledown's Daily Intelligencer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0908;
+      color: #f5e6c8;
+      font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    .ornate-rule {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      color: #8b1a1a;
+      font-size: 1.1rem;
+      letter-spacing: 0.3em;
+      user-select: none;
+    }
+
+    .ornate-rule::before,
+    .ornate-rule::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #8b1a1a 20%, #8b1a1a 80%, transparent);
+    }
+
+    .ornate-rule-double {
+      position: relative;
+      text-align: center;
+      margin: 0.5rem 0;
+    }
+
+    .ornate-rule-double::before,
+    .ornate-rule-double::after {
+      content: '';
+      display: block;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #8b1a1a 15%, #8b1a1a 85%, transparent);
+    }
+
+    .ornate-rule-double::before { margin-bottom: 3px; }
+    .ornate-rule-double::after { margin-top: 3px; }
+
+    .masthead {
+      text-align: center;
+      padding: 2.5rem 0 0;
+    }
+
+    .masthead-est {
+      font-family: 'EB Garamond', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #c9a84c;
+      margin-bottom: 0.25rem;
+    }
+
+    .masthead-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #f5e6c8;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      margin: 0.5rem 0 0.4rem;
+    }
+
+    .masthead-subtitle {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 400;
+      font-style: italic;
+      color: #c9a84c;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.3rem;
+    }
+
+    .hero-text {
+      text-align: center;
+      padding: 2.5rem 1rem 2rem;
+      font-family: 'EB Garamond', serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      line-height: 1.7;
+      color: #f5e6c8;
+      opacity: 0.85;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .subscribe-form {
+      max-width: 440px;
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+      text-align: center;
+    }
+
+    .subscribe-form input[type="email"] {
+      width: 100%;
+      padding: 0.85rem 1.1rem;
+      font-family: 'EB Garamond', serif;
+      font-size: 1.1rem;
+      background: rgba(245, 230, 200, 0.08);
+      border: 1px solid rgba(201, 168, 76, 0.35);
+      border-radius: 3px;
+      color: #f5e6c8;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .subscribe-form input[type="email"]::placeholder {
+      color: rgba(245, 230, 200, 0.35);
+      font-style: italic;
+    }
+
+    .subscribe-form input[type="email"]:focus {
+      border-color: #c9a84c;
+      box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.15);
+    }
+
+    .subscribe-form button {
+      display: block;
+      width: 100%;
+      margin-top: 1rem;
+      padding: 0.9rem 1.5rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: #f5e6c8;
+      background: #8b1a1a;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .subscribe-form button:hover {
+      background: #a52020;
+      transform: translateY(-1px);
+    }
+
+    .subscribe-form button:active {
+      transform: translateY(0);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      font-family: 'EB Garamond', serif;
+      font-size: 0.95rem;
+      color: #c9a84c;
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.2s ease;
+    }
+
+    .back-link:hover { opacity: 1; }
+
+    .site-footer {
+      text-align: center;
+      padding: 1.5rem 1rem 3rem;
+      border-top: 1px solid rgba(139, 26, 26, 0.25);
+    }
+
+    .site-footer p {
+      font-family: 'EB Garamond', serif;
+      font-size: 0.95rem;
+      font-style: italic;
+      color: #f5e6c8;
+      opacity: 0.5;
+      line-height: 1.6;
+    }
+
+    @media (min-width: 600px) {
+      .masthead { padding-top: 3.5rem; }
+      .masthead-title { font-size: 3.6rem; }
+      .masthead-subtitle { font-size: 1.15rem; }
+      .hero-text { font-size: 1.35rem; }
+    }
+
+    @media (max-width: 400px) {
+      .masthead-title { font-size: 2.1rem; }
+      .ornate-rule { font-size: 0.9rem; letter-spacing: 0.15em; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <header class="masthead">
+      <div class="ornate-rule-double"></div>
+      <p class="masthead-est">Est. MMXXVI</p>
+      <div class="ornate-rule">&#10041;</div>
+      <h1 class="masthead-title">The Daily Intelligencer</h1>
+      <p class="masthead-subtitle">Lady Whistledown's Society Papers &mdash; AI Edition</p>
+      <div class="ornate-rule">&#10041;</div>
+      <div class="ornate-rule-double"></div>
+    </header>
+
+    <p class="hero-text">
+      Dearest gentle reader, should you wish to receive the daily intelligence
+      directly to your correspondence box, your humble correspondent makes it
+      frightfully easy to subscribe.
+    </p>
+
+    <div class="ornate-rule">&#10041;</div>
+
+    <form class="subscribe-form" action="https://formspree.io/f/xdkgrvqo" method="POST">
+      <input type="hidden" name="_subject" value="New Decaf Subscriber">
+      <input type="hidden" name="_next" value="https://rowantrollope.github.io/decaf/subscribed.html">
+      <input type="email" name="email" placeholder="your@correspondence.address" required>
+      <button type="submit">Subscribe to the Daily Dispatch</button>
+      <a href="index.html" class="back-link">&larr; Return to the Daily Intelligencer</a>
+    </form>
+
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="ornate-rule-double"></div>
+      <p>Your correspondence is kept in the strictest confidence. Unsubscribe at any time.<br>&mdash; Lady Whistledown</p>
+    </div>
+  </footer>
+
+</body>
+</html>

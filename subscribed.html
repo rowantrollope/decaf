@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subscribed — Lady Whistledown's Daily Intelligencer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0908;
+      color: #f5e6c8;
+      font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    .ornate-rule {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      color: #8b1a1a;
+      font-size: 1.1rem;
+      letter-spacing: 0.3em;
+      user-select: none;
+    }
+
+    .ornate-rule::before,
+    .ornate-rule::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #8b1a1a 20%, #8b1a1a 80%, transparent);
+    }
+
+    .ornate-rule-double {
+      position: relative;
+      text-align: center;
+      margin: 0.5rem 0;
+    }
+
+    .ornate-rule-double::before,
+    .ornate-rule-double::after {
+      content: '';
+      display: block;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #8b1a1a 15%, #8b1a1a 85%, transparent);
+    }
+
+    .ornate-rule-double::before { margin-bottom: 3px; }
+    .ornate-rule-double::after { margin-top: 3px; }
+
+    .masthead {
+      text-align: center;
+      padding: 2.5rem 0 0;
+    }
+
+    .masthead-est {
+      font-family: 'EB Garamond', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #c9a84c;
+      margin-bottom: 0.25rem;
+    }
+
+    .masthead-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #f5e6c8;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      margin: 0.5rem 0 0.4rem;
+    }
+
+    .masthead-subtitle {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 400;
+      font-style: italic;
+      color: #c9a84c;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.3rem;
+    }
+
+    .thank-you {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+    }
+
+    .thank-you h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #f5e6c8;
+      margin-bottom: 1.5rem;
+    }
+
+    .thank-you p {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.2rem;
+      font-style: italic;
+      line-height: 1.7;
+      color: #f5e6c8;
+      opacity: 0.8;
+      margin-bottom: 1rem;
+    }
+
+    .thank-you .cta-link {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.85rem 2rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: #f5e6c8;
+      background: #8b1a1a;
+      border-radius: 3px;
+      text-decoration: none;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .thank-you .cta-link:hover {
+      background: #a52020;
+      transform: translateY(-1px);
+    }
+
+    .site-footer {
+      text-align: center;
+      padding: 1.5rem 1rem 3rem;
+      border-top: 1px solid rgba(139, 26, 26, 0.25);
+    }
+
+    .site-footer p {
+      font-family: 'EB Garamond', serif;
+      font-size: 0.95rem;
+      font-style: italic;
+      color: #f5e6c8;
+      opacity: 0.5;
+      line-height: 1.6;
+    }
+
+    @media (min-width: 600px) {
+      .masthead { padding-top: 3.5rem; }
+      .masthead-title { font-size: 3.6rem; }
+      .masthead-subtitle { font-size: 1.15rem; }
+      .thank-you h2 { font-size: 2.1rem; }
+    }
+
+    @media (max-width: 400px) {
+      .masthead-title { font-size: 2.1rem; }
+      .ornate-rule { font-size: 0.9rem; letter-spacing: 0.15em; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <header class="masthead">
+      <div class="ornate-rule-double"></div>
+      <p class="masthead-est">Est. MMXXVI</p>
+      <div class="ornate-rule">&#10041;</div>
+      <h1 class="masthead-title">The Daily Intelligencer</h1>
+      <p class="masthead-subtitle">Lady Whistledown's Society Papers &mdash; AI Edition</p>
+      <div class="ornate-rule">&#10041;</div>
+      <div class="ornate-rule-double"></div>
+    </header>
+
+    <div class="thank-you">
+      <h2>Splendid.</h2>
+      <p>Your correspondent is delighted to make your acquaintance.</p>
+      <p>The Daily Intelligence will arrive each morning at 7 AM Pacific.</p>
+      <a href="https://rowantrollope.github.io/decaf/" class="cta-link">Listen to Today&rsquo;s Dispatch</a>
+    </div>
+
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="ornate-rule-double"></div>
+      <p>Your humble correspondent remains ever watchful.<br>&mdash; Lady Whistledown</p>
+    </div>
+  </footer>
+
+</body>
+</html>
