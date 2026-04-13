@@ -115,7 +115,8 @@
       text-align: center;
     }
 
-    .subscribe-form input[type="email"] {
+    .subscribe-form input[type="email"],
+    .subscribe-form input[type="text"] {
       width: 100%;
       padding: 0.85rem 1.1rem;
       font-family: 'EB Garamond', serif;
@@ -128,14 +129,30 @@
       transition: border-color 0.2s ease;
     }
 
-    .subscribe-form input[type="email"]::placeholder {
+    .subscribe-form input[type="email"]::placeholder,
+    .subscribe-form input[type="text"]::placeholder {
       color: rgba(245, 230, 200, 0.35);
       font-style: italic;
     }
 
-    .subscribe-form input[type="email"]:focus {
+    .subscribe-form input[type="email"]:focus,
+    .subscribe-form input[type="text"]:focus {
       border-color: #c9a84c;
       box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.15);
+    }
+
+    .subscribe-form input[type="text"] {
+      margin-bottom: 0.75rem;
+    }
+
+    .subscribe-note {
+      margin-top: 1rem;
+      font-family: 'EB Garamond', serif;
+      font-size: 0.9rem;
+      font-style: italic;
+      color: #f5e6c8;
+      opacity: 0.55;
+      line-height: 1.5;
     }
 
     .subscribe-form button {
@@ -227,13 +244,25 @@
 
     <div class="ornate-rule">&#10041;</div>
 
-    <form class="subscribe-form" action="https://formspree.io/f/xdkgrvqo" method="POST">
-      <input type="hidden" name="_subject" value="New Decaf Subscriber">
-      <input type="hidden" name="_next" value="https://rowantrollope.github.io/decaf/subscribed.html">
-      <input type="email" name="email" placeholder="your@correspondence.address" required>
+    <form class="subscribe-form" onsubmit="return handleSubscribe(event)">
+      <input type="text" name="name" id="sub-name" placeholder="Your name (optional)">
+      <input type="email" name="email" id="sub-email" placeholder="your@correspondence.address" required>
       <button type="submit">Subscribe to the Daily Dispatch</button>
+      <p class="subscribe-note">Clicking subscribe will open your email app to confirm. We&rsquo;ll add you within 24 hours.</p>
       <a href="index.html" class="back-link">&larr; Return to the Daily Intelligencer</a>
     </form>
+
+    <script>
+    function handleSubscribe(e) {
+      e.preventDefault();
+      var email = document.getElementById('sub-email').value;
+      var name = document.getElementById('sub-name').value || 'Not provided';
+      var subject = encodeURIComponent('Subscribe me to Decaf');
+      var body = encodeURIComponent('Please add me to the Decaf daily newsletter.\n\nMy email: ' + email + '\nName: ' + name);
+      window.location.href = 'mailto:sancho.v.navarro@gmail.com?subject=' + subject + '&body=' + body;
+      return false;
+    }
+    </script>
 
   </div>
 
