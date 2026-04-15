@@ -244,7 +244,7 @@
 
     <div class="ornate-rule">&#10041;</div>
 
-    <form class="subscribe-form" onsubmit="return handleSubscribe(event)">
+    <form class="subscribe-form" onsubmit="handleSubscribe(event); return false;">
       <input type="text" name="name" id="sub-name" placeholder="Your name (optional)">
       <input type="email" name="email" id="sub-email" placeholder="your@correspondence.address" required>
       <button type="submit">Subscribe to the Daily Dispatch</button>
@@ -252,15 +252,36 @@
       <a href="index.html" class="back-link">&larr; Return to the Daily Intelligencer</a>
     </form>
 
+    <style>
+    .success-message { text-align: center; padding: 2rem 0; }
+    .success-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #c9a84c; margin-bottom: 0.75rem; }
+    .success-sub { font-style: italic; opacity: 0.8; margin-bottom: 1.5rem; line-height: 1.7; }
+    .error-note { color: #c9a84c; font-style: italic; font-size: 0.9rem; margin-top: 0.5rem; }
+    </style>
     <script>
-    function handleSubscribe(e) {
+    async function handleSubscribe(e) {
       e.preventDefault();
       var email = document.getElementById('sub-email').value;
-      var name = document.getElementById('sub-name').value || 'Not provided';
-      var subject = encodeURIComponent('Subscribe me to Decaf');
-      var body = encodeURIComponent('Please add me to the Decaf daily newsletter.\n\nMy email: ' + email + '\nName: ' + name);
-      window.location.href = 'mailto:sancho.v.navarro@gmail.com?subject=' + subject + '&body=' + body;
-      return false;
+      var name = document.getElementById('sub-name').value || '';
+      var btn = document.querySelector('.subscribe-form button');
+      btn.textContent = 'Subscribing...';
+      btn.disabled = true;
+      try {
+        var res = await fetch('https://openclaw-sancho.tail5d584c.ts.net/hooks/subscribe?token=245ea633d7547a26f8af8021edd34c36', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({email: email, name: name})
+        });
+        if (res.ok || res.status === 202) {
+          document.querySelector('.subscribe-form').innerHTML = '<div class="success-message"><p class="success-title">✉️ You are subscribed.</p><p class="success-sub">Dearest ' + (name || 'gentle reader') + ', your correspondent is delighted. The Daily Intelligence shall arrive each morning at 7 AM Pacific.</p><a href="index.html" class="back-link">← Return to the Daily Intelligencer</a></div>';
+        } else { throw new Error('Server error'); }
+      } catch(err) {
+        btn.textContent = 'Subscribe to the Daily Dispatch';
+        btn.disabled = false;
+        var note = document.querySelector('.subscribe-note');
+        note.textContent = 'Something went wrong. Please try again.';
+        note.className = 'error-note';
+      }
     }
     </script>
 

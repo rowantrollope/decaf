@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unsubscribe — Lady Whistledown's Daily Intelligencer</title>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0908; color: #f5e6c8; font-family: 'EB Garamond', Georgia, serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+    .container { max-width: 520px; width: 100%; text-align: center; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 2rem; color: #c9a84c; margin-bottom: 1rem; }
+    p { font-size: 1.1rem; line-height: 1.7; opacity: 0.8; margin-bottom: 1.5rem; }
+    .email-display { font-style: italic; color: #c9a84c; }
+    .btn-confirm { display: inline-block; padding: 0.8rem 2rem; background: #8b1a1a; color: #f5e6c8; font-family: 'Playfair Display', serif; font-size: 1rem; border: none; border-radius: 3px; cursor: pointer; margin: 0.5rem; transition: background 0.2s; }
+    .btn-confirm:hover { background: #a52020; }
+    .btn-cancel { display: inline-block; padding: 0.8rem 2rem; background: transparent; color: #f5e6c8; font-family: 'Playfair Display', serif; font-size: 1rem; border: 1px solid rgba(245,230,200,0.3); border-radius: 3px; cursor: pointer; margin: 0.5rem; text-decoration: none; transition: border-color 0.2s; }
+    .btn-cancel:hover { border-color: #c9a84c; }
+    .result { padding: 1.5rem; border: 1px solid rgba(201,168,76,0.3); border-radius: 4px; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="container" id="content">
+    <h1>One moment...</h1>
+    <p>Loading unsubscribe request.</p>
+  </div>
+
+  <script>
+  const params = new URLSearchParams(window.location.search);
+  const email = params.get('email') || '';
+  const content = document.getElementById('content');
+
+  if (!email) {
+    content.innerHTML = '<h1>Invalid Link</h1><p>No email address found in this unsubscribe link.</p><a href="index.html" class="btn-cancel">Back to Decaf</a>';
+  } else {
+    content.innerHTML = `
+      <h1>Unsubscribe</h1>
+      <p>Remove <span class="email-display">${email}</span> from Lady Whistledown's Daily Intelligence?</p>
+      <button class="btn-confirm" onclick="doUnsubscribe()">Yes, unsubscribe me</button>
+      <a href="index.html" class="btn-cancel">No, keep me subscribed</a>
+      <div id="result"></div>
+    `;
+  }
+
+  async function doUnsubscribe() {
+    const btn = document.querySelector('.btn-confirm');
+    btn.textContent = 'Unsubscribing...';
+    btn.disabled = true;
+    try {
+      const res = await fetch('https://openclaw-sancho.tail5d584c.ts.net/hooks/unsubscribe?token=245ea633d7547a26f8af8021edd34c36', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email: email})
+      });
+      content.innerHTML = '<div class="result"><h1>Done</h1><p>You have been unsubscribed. Your correspondent understands, and harbours no ill will.</p><a href="index.html" class="btn-cancel">Return to Decaf</a></div>';
+    } catch(err) {
+      document.getElementById('result').innerHTML = '<p style="color:#c9a84c;margin-top:1rem;">Something went wrong. Please try again.</p>';
+      btn.textContent = 'Yes, unsubscribe me';
+      btn.disabled = false;
+    }
+  }
+  </script>
+</body>
+</html>
