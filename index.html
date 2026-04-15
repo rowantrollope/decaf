@@ -1,356 +1,1072 @@
-<!--
-  Decaf Audio Player — GitHub Pages
-  When new episodes are added, update daily/voice/manifest.json with the new entry.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Daily Intelligencer — Lady Whistledown's AI Society Papers</title>
+  <title>Decaf — The Daily Intelligencer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface2: #161616;
+      --border: #1e1e1e;
+      --border2: #2a2a2a;
+      --text: #f0f0f0;
+      --text2: #888;
+      --text3: #555;
+      --gold: #c9a84c;
+      --gold-dim: rgba(201, 168, 76, 0.12);
+      --gold-glow: rgba(201, 168, 76, 0.06);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      background: #0a0908;
-      color: #f5e6c8;
-      font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 128px 128px;
     }
 
     .container {
-      max-width: 680px;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 0 1.25rem;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 1;
     }
 
-    /* — Ornate dividers — */
-    .ornate-rule {
+    .container-narrow {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      height: 60px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      padding: 0.75rem 0;
-      color: #8b1a1a;
-      font-size: 1.1rem;
-      letter-spacing: 0.3em;
-      user-select: none;
+      justify-content: space-between;
     }
 
-    .ornate-rule::before,
-    .ornate-rule::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, #8b1a1a 20%, #8b1a1a 80%, transparent);
-    }
-
-    .ornate-rule-double {
-      position: relative;
-      text-align: center;
-      margin: 0.5rem 0;
-    }
-
-    .ornate-rule-double::before,
-    .ornate-rule-double::after {
-      content: '';
-      display: block;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, #8b1a1a 15%, #8b1a1a 85%, transparent);
-    }
-
-    .ornate-rule-double::before { margin-bottom: 3px; }
-    .ornate-rule-double::after { margin-top: 3px; }
-
-    /* — Masthead — */
-    .masthead {
-      text-align: center;
-      padding: 2.5rem 0 0;
-    }
-
-    .masthead-est {
-      font-family: 'EB Garamond', serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      color: #c9a84c;
-      margin-bottom: 0.25rem;
-    }
-
-    .masthead-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.8rem;
-      font-weight: 800;
-      color: #f5e6c8;
-      letter-spacing: 0.04em;
-      line-height: 1.1;
-      margin: 0.5rem 0 0.4rem;
-    }
-
-    .masthead-subtitle {
-      font-family: 'Playfair Display', serif;
-      font-size: 1rem;
-      font-weight: 400;
-      font-style: italic;
-      color: #c9a84c;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.3rem;
-    }
-
-    .masthead-tagline {
-      font-family: 'EB Garamond', serif;
-      font-size: 0.85rem;
-      font-style: italic;
-      color: #f5e6c8;
-      opacity: 0.55;
-      letter-spacing: 0.08em;
-      margin-top: 0.4rem;
-    }
-
-    /* — Subscribe button — */
-    .subscribe-btn {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: 0.65rem 1.5rem;
-      font-family: 'Playfair Display', serif;
-      font-size: 0.95rem;
+    .nav-logo {
+      font-family: 'Inter', sans-serif;
       font-weight: 600;
-      letter-spacing: 0.06em;
-      color: #f5e6c8;
-      background: #8b1a1a;
-      border-radius: 3px;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
       text-decoration: none;
-      transition: background 0.2s ease, transform 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
     }
 
-    .subscribe-btn:hover {
-      background: #a52020;
+    .nav-logo span {
+      color: var(--gold);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .nav-link {
+      font-size: 0.875rem;
+      color: var(--text2);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover { color: var(--text); }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      border-radius: 6px;
+      text-decoration: none;
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, transform 0.15s;
+    }
+
+    .btn-outline:hover {
+      background: var(--gold-dim);
       transform: translateY(-1px);
     }
 
-    /* — Hero image — */
+    .btn-solid {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.75rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #0a0a0a;
+      background: var(--gold);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      text-decoration: none;
+    }
+
+    .btn-solid:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    /* ── HERO ── */
     .hero {
       position: relative;
-      width: 100%;
-      margin: 1.5rem 0 2rem;
+      padding: 5rem 0 4.5rem;
+      text-align: center;
       overflow: hidden;
-      border-radius: 4px;
-      border: 1px solid rgba(139, 26, 26, 0.3);
     }
 
-    .hero img {
-      width: 100%;
-      display: block;
-    }
-
-    .hero::after {
+    /* animated gradient background */
+    .hero::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse at center, transparent 40%, #0a0908 100%);
-      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 50%, rgba(201, 168, 76, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 30%, rgba(201, 168, 76, 0.05) 0%, transparent 60%);
+      animation: heroGlow 8s ease-in-out infinite alternate;
     }
 
-    /* — Section headings — */
-    .section-heading {
-      text-align: center;
-      margin: 2.5rem 0 1.75rem;
+    @keyframes heroGlow {
+      0%   { opacity: 0.6; }
+      50%  { opacity: 1; }
+      100% { opacity: 0.7; }
     }
 
-    .section-heading h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #8b1a1a;
-      letter-spacing: 0.12em;
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.25em;
       text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-
-    .section-heading .heading-line {
-      width: 120px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, #c9a84c, transparent);
-      margin: 0 auto;
-    }
-
-    /* — Episodes — */
-    .episodes {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-      padding-bottom: 3rem;
-    }
-
-    .episode {
+      color: var(--gold);
+      margin-bottom: 1.5rem;
       position: relative;
-      background: #f5e6c8;
-      color: #1a1714;
-      border-radius: 3px;
-      padding: 1.5rem 1.5rem 1.25rem;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
     }
 
-    .episode:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55);
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
     }
 
-    .episode::before {
+    .hero-title {
+      font-family: 'Lora', 'Instrument Serif', Georgia, serif;
+      font-size: clamp(2.8rem, 8vw, 5.5rem);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-tagline {
+      font-family: 'Lora', serif;
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--text2);
+      max-width: 480px;
+      margin: 0 auto 2rem;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text3);
+      position: relative;
+    }
+
+    .hero-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .hero-meta-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--border2);
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2) 20%, var(--border2) 80%, transparent);
+      margin: 0;
+    }
+
+    /* ── LATEST EPISODE ── */
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 1.25rem;
+    }
+
+    .latest-section {
+      padding: 4rem 0;
+    }
+
+    .featured-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem 2rem 1.75rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.25s;
+    }
+
+    .featured-card::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, transparent, #8b1a1a, transparent);
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold) 70%, transparent);
     }
 
-    /* Wax seal */
-    .episode .seal {
-      position: absolute;
-      top: 0.85rem;
-      right: 1rem;
-      width: 32px;
-      height: 32px;
-      background: radial-gradient(circle at 40% 40%, #c0392b, #8b1a1a 60%, #5a1010);
+    .featured-card:hover {
+      border-color: var(--border2);
+    }
+
+    .featured-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.6rem;
+      background: var(--gold-dim);
+      border: 1px solid rgba(201, 168, 76, 0.25);
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+    }
+
+    .featured-badge::before {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .featured-date {
+      font-size: 0.8rem;
+      color: var(--text2);
+      margin-bottom: 0.6rem;
+      font-weight: 400;
+    }
+
+    .featured-title {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .featured-desc {
+      font-size: 0.9rem;
+      color: var(--text2);
+      line-height: 1.65;
+      margin-bottom: 1.75rem;
+      max-width: 640px;
+    }
+
+    /* ── CUSTOM AUDIO PLAYER ── */
+    .audio-player {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-family: 'Playfair Display', serif;
-      font-weight: 700;
-      font-size: 0.8rem;
-      color: #f5e6c8;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      gap: 1rem;
       user-select: none;
     }
 
-    .episode.featured .seal {
-      width: 38px;
-      height: 38px;
-      font-size: 0.9rem;
+    .audio-player.mini {
+      padding: 0.65rem 1rem;
+      gap: 0.75rem;
     }
 
-    .episode-dateline {
-      font-family: 'EB Garamond', serif;
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #8b1a1a;
-      margin-bottom: 0.75rem;
-      padding-right: 2.5rem;
+    .play-btn {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s, transform 0.15s;
+      color: #0a0a0a;
     }
 
-    .episode.featured .episode-dateline::after {
-      content: ' — Latest Dispatch';
-      font-style: italic;
-      letter-spacing: 0.05em;
-      text-transform: none;
-      color: #c9a84c;
+    .audio-player.mini .play-btn {
+      width: 32px;
+      height: 32px;
     }
 
-    .episode audio {
+    .play-btn:hover {
+      opacity: 0.85;
+      transform: scale(1.05);
+    }
+
+    .play-btn svg {
+      display: block;
+      pointer-events: none;
+    }
+
+    .audio-player.mini .play-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .player-controls {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .player-progress-wrap {
+      position: relative;
+      height: 4px;
+      background: var(--border2);
+      border-radius: 2px;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .player-progress-wrap:hover {
+      height: 5px;
+    }
+
+    .player-progress-bar {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.1s linear;
+      pointer-events: none;
+    }
+
+    .player-progress-input {
+      position: absolute;
+      inset: -6px 0;
+      opacity: 0;
       width: 100%;
-      height: 44px;
-      border-radius: 6px;
-      outline: none;
-      filter: contrast(0.95) brightness(0.9);
+      cursor: pointer;
+      margin: 0;
     }
 
-    /* — Footer — */
-    .site-footer {
+    .player-times {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: var(--text3);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── EPISODE LIST ── */
+    .episodes-section {
+      padding: 2rem 0 4rem;
+    }
+
+    .episodes-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .episodes-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    @media (min-width: 640px) {
+      .episodes-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .episode-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem 1.25rem 1rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .episode-card:hover {
+      border-color: rgba(201, 168, 76, 0.35);
+      background: var(--surface2);
+      transform: translateY(-2px);
+    }
+
+    .episode-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gold-glow);
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+
+    .episode-card:hover::after { opacity: 1; }
+
+    .ep-date {
+      font-size: 0.72rem;
+      color: var(--gold);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .ep-title {
+      font-family: 'Lora', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+    }
+
+    .ep-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ep-day {
+      font-size: 0.75rem;
+      color: var(--text3);
+    }
+
+    .ep-play-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gold-dim);
+      border: 1px solid rgba(201, 168, 76, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .episode-card:hover .ep-play-icon {
+      background: var(--gold-dim);
+    }
+
+    /* ── SUBSCRIBE SECTION ── */
+    .subscribe-section {
+      padding: 4rem 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .subscribe-inner {
+      max-width: 520px;
+      margin: 0 auto;
       text-align: center;
-      padding: 1.5rem 1rem 3rem;
-      border-top: 1px solid rgba(139, 26, 26, 0.25);
     }
 
-    .site-footer p {
-      font-family: 'EB Garamond', serif;
-      font-size: 0.95rem;
-      font-style: italic;
-      color: #f5e6c8;
-      opacity: 0.5;
+    .subscribe-inner .section-label {
+      justify-content: center;
+      display: flex;
+    }
+
+    .subscribe-heading {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .subscribe-sub {
+      font-size: 0.9rem;
+      color: var(--text2);
+      margin-bottom: 2rem;
       line-height: 1.6;
     }
 
-    .empty {
-      text-align: center;
-      color: #f5e6c8;
-      opacity: 0.4;
-      padding: 3rem 1rem;
+    .subscribe-form {
+      display: flex;
+      gap: 0.5rem;
+      max-width: 420px;
+      margin: 0 auto 0.75rem;
+    }
+
+    .subscribe-input {
+      flex: 1;
+      min-width: 0;
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .subscribe-input::placeholder { color: var(--text3); }
+
+    .subscribe-input:focus {
+      border-color: rgba(201, 168, 76, 0.4);
+    }
+
+    .subscribe-note {
+      font-size: 0.75rem;
+      color: var(--text3);
+      line-height: 1.5;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 0;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--text3);
       font-style: italic;
     }
 
-    /* — Responsive — */
-    @media (min-width: 600px) {
-      .masthead { padding-top: 3.5rem; }
-      .masthead-title { font-size: 3.6rem; }
-      .masthead-subtitle { font-size: 1.15rem; }
-      .episode { padding: 1.75rem 2rem 1.5rem; }
+    /* ── LOADING / EMPTY STATES ── */
+    .loading-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--text3);
+      font-size: 0.9rem;
     }
 
-    @media (max-width: 400px) {
-      .masthead-title { font-size: 2.1rem; }
-      .ornate-rule { font-size: 0.9rem; letter-spacing: 0.15em; }
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+      height: 14px;
+      margin-bottom: 0.5rem;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 600px) {
+      .nav-links .nav-link { display: none; }
+      .hero { padding: 3rem 0 3rem; }
+      .featured-card { padding: 1.5rem 1.25rem 1.25rem; }
+      .subscribe-form { flex-direction: column; }
+      .subscribe-form .btn-solid { width: 100%; }
+      .footer-inner { flex-direction: column; text-align: center; }
+    }
+
+    /* ── ACTIVE STATE FOR PLAYING CARDS ── */
+    .episode-card.active {
+      border-color: rgba(201, 168, 76, 0.4);
+      background: var(--surface2);
+    }
+
+    .episode-card.active .ep-play-icon {
+      background: var(--gold);
+      color: #0a0a0a;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-
-    <!-- Masthead -->
-    <header class="masthead">
-      <div class="ornate-rule-double"></div>
-      <p class="masthead-est">Est. MMXXVI</p>
-      <div class="ornate-rule">&#10041;</div>
-      <h1 class="masthead-title">The Daily Intelligencer</h1>
-      <p class="masthead-subtitle">Lady Whistledown's Society Papers &mdash; AI Edition</p>
-      <p class="masthead-tagline">All the intelligence that is fit to whisper</p>
-      <div class="ornate-rule">&#10041;</div>
-      <div class="ornate-rule-double"></div>
-      <a href="subscribe.html" class="subscribe-btn">&#9993;&#65039; Subscribe to Daily Dispatch</a>
-    </header>
-
-    <!-- Hero Image -->
-    <div class="hero">
-      <img src="./daily/whistledown-hero.png"
-           alt="A Regency-era handwritten letter on aged parchment"
-           loading="eager">
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">Decaf <span>🫖</span></a>
+      <div class="nav-links">
+        <a href="#episodes" class="nav-link">Archive</a>
+        <a href="#subscribe" class="btn-outline">Subscribe</a>
+      </div>
     </div>
+  </nav>
 
-    <!-- Episodes -->
-    <section>
-      <div class="section-heading">
-        <h2>Recent Dispatches</h2>
-        <div class="heading-line"></div>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container-narrow" style="position:relative;">
+      <div class="hero-eyebrow">Daily Dispatch</div>
+      <h1 class="hero-title">The Daily<br><em>Intelligencer</em></h1>
+      <p class="hero-tagline">Lady Whistledown's Society Papers — AI Edition. All the intelligence that is fit to whisper.</p>
+      <div class="hero-meta">
+        <span class="hero-meta-item">Est. MMXXVI</span>
+        <span class="hero-meta-dot"></span>
+        <span class="hero-meta-item">San Francisco</span>
+        <span class="hero-meta-dot"></span>
+        <span class="hero-meta-item">Daily</span>
       </div>
+    </div>
+  </section>
 
-      <div class="episodes" id="episodes">
-        <p class="empty">Loading dispatches&hellip;</p>
-      </div>
-    </section>
+  <div class="divider"></div>
 
-  </div>
-
-  <!-- Footer -->
-  <footer class="site-footer">
+  <!-- LATEST EPISODE -->
+  <section class="latest-section">
     <div class="container">
-      <div class="ornate-rule-double"></div>
-      <p>Your humble correspondent remains ever watchful.<br>&mdash; Lady Whistledown</p>
+      <div class="section-label">Latest Episode</div>
+      <div id="featured-card" class="featured-card loading-card">
+        <div class="skeleton" style="width:30%;height:12px;margin-bottom:1.5rem;"></div>
+        <div class="skeleton" style="width:70%;height:28px;margin-bottom:0.75rem;"></div>
+        <div class="skeleton" style="width:90%;height:14px;margin-bottom:0.4rem;"></div>
+        <div class="skeleton" style="width:75%;height:14px;margin-bottom:2rem;"></div>
+        <div class="skeleton" style="height:60px;border-radius:8px;"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- EPISODE LIST -->
+  <section class="episodes-section" id="episodes">
+    <div class="container">
+      <div class="episodes-header">
+        <div class="section-label" style="margin-bottom:0;">Archive</div>
+      </div>
+      <div class="episodes-grid" id="episodes-grid">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- SUBSCRIBE CTA -->
+  <section class="subscribe-section" id="subscribe">
+    <div class="container">
+      <div class="subscribe-inner">
+        <div class="section-label">Newsletter</div>
+        <h2 class="subscribe-heading">Get the daily dispatch in your inbox</h2>
+        <p class="subscribe-sub">Sharp, brief, and ruthlessly curated. Delivered every morning.</p>
+        <form class="subscribe-form" id="subscribe-form" onsubmit="return handleSubscribe(event)">
+          <input
+            type="email"
+            class="subscribe-input"
+            placeholder="your@email.com"
+            id="subscribe-email"
+            required
+            autocomplete="email"
+          >
+          <button type="submit" class="btn-solid">Subscribe</button>
+        </form>
+        <p class="subscribe-note">No spam. Unsubscribe anytime. — Lady Whistledown</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">Decaf 🫖</div>
+      <div class="footer-copy">Your humble correspondent remains ever watchful.</div>
     </div>
   </footer>
 
   <script>
+  (function () {
+    'use strict';
+
+    // ── SCROLL REVEAL ──────────────────────────────────────────────
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.1 }
+    );
+
+    // ── HELPERS ────────────────────────────────────────────────────
+    const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    function parseDate(str) {
+      // str = "2026-04-15" — parse as local noon to avoid TZ edge cases
+      const [y, m, d] = str.split('-').map(Number);
+      return new Date(y, m - 1, d, 12);
+    }
+
+    function formatDateFull(str) {
+      const d = parseDate(str);
+      return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    }
+
+    function formatDateShort(str) {
+      const d = parseDate(str);
+      return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    }
+
+    function formatDayName(str) {
+      const d = parseDate(str);
+      return DAYS[d.getDay()];
+    }
+
+    function fmtTime(sec) {
+      if (isNaN(sec)) return '0:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    // ── AUDIO PLAYER FACTORY ───────────────────────────────────────
+    let activeAudio = null;
+    let activePlayBtn = null;
+
+    function makePlayIcon() {
+      return `<svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><polygon points="5,3 15,9 5,15"/></svg>`;
+    }
+
+    function makePauseIcon() {
+      return `<svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><rect x="4" y="3" width="3.5" height="12" rx="1"/><rect x="10.5" y="3" width="3.5" height="12" rx="1"/></svg>`;
+    }
+
+    function makeSmallPlayIcon() {
+      return `<svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><polygon points="2,1 9,5 2,9"/></svg>`;
+    }
+
+    function buildPlayer(audioSrc, playerId) {
+      return `
+        <div class="audio-player" id="player-${playerId}">
+          <button class="play-btn" id="play-btn-${playerId}" aria-label="Play">
+            ${makePlayIcon()}
+          </button>
+          <div class="player-controls">
+            <div class="player-progress-wrap" id="progress-wrap-${playerId}">
+              <div class="player-progress-bar" id="progress-bar-${playerId}"></div>
+              <input type="range" class="player-progress-input" min="0" max="100" value="0" step="0.1" id="progress-input-${playerId}" aria-label="Seek">
+            </div>
+            <div class="player-times">
+              <span id="time-current-${playerId}">0:00</span>
+              <span id="time-total-${playerId}">—</span>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function initPlayer(audioSrc, playerId, cardEl) {
+      const playBtn = document.getElementById(`play-btn-${playerId}`);
+      const progressBar = document.getElementById(`progress-bar-${playerId}`);
+      const progressInput = document.getElementById(`progress-input-${playerId}`);
+      const timeCurrent = document.getElementById(`time-current-${playerId}`);
+      const timeTotal = document.getElementById(`time-total-${playerId}`);
+
+      if (!playBtn) return;
+
+      let audio = null;
+
+      function ensureAudio() {
+        if (!audio) {
+          audio = new Audio(audioSrc);
+          audio.preload = 'metadata';
+
+          audio.addEventListener('loadedmetadata', () => {
+            timeTotal.textContent = fmtTime(audio.duration);
+          });
+
+          audio.addEventListener('timeupdate', () => {
+            const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+            progressBar.style.width = pct + '%';
+            progressInput.value = pct;
+            timeCurrent.textContent = fmtTime(audio.currentTime);
+          });
+
+          audio.addEventListener('ended', () => {
+            playBtn.innerHTML = makePlayIcon();
+            progressBar.style.width = '0%';
+            progressInput.value = 0;
+            timeCurrent.textContent = '0:00';
+            if (cardEl) cardEl.classList.remove('active');
+          });
+        }
+        return audio;
+      }
+
+      playBtn.addEventListener('click', () => {
+        const a = ensureAudio();
+
+        if (activeAudio && activeAudio !== a) {
+          activeAudio.pause();
+          if (activePlayBtn) activePlayBtn.innerHTML = makePlayIcon();
+          // deactivate previous card
+          document.querySelectorAll('.episode-card.active').forEach(c => c.classList.remove('active'));
+        }
+
+        if (a.paused) {
+          a.play();
+          playBtn.innerHTML = makePauseIcon();
+          activeAudio = a;
+          activePlayBtn = playBtn;
+          if (cardEl) cardEl.classList.add('active');
+        } else {
+          a.pause();
+          playBtn.innerHTML = makePlayIcon();
+          activeAudio = null;
+          activePlayBtn = null;
+          if (cardEl) cardEl.classList.remove('active');
+        }
+      });
+
+      progressInput.addEventListener('input', () => {
+        const a = ensureAudio();
+        if (a.duration) {
+          a.currentTime = (progressInput.value / 100) * a.duration;
+        }
+      });
+    }
+
+    // ── RENDER FEATURED CARD ───────────────────────────────────────
+    function renderFeatured(ep) {
+      const container = document.getElementById('featured-card');
+      if (!container) return;
+
+      container.className = 'featured-card reveal';
+
+      container.innerHTML = `
+        <span class="featured-badge">Latest Dispatch</span>
+        <div class="featured-date">${formatDateFull(ep.date)}</div>
+        <h2 class="featured-title">${ep.label || formatDateShort(ep.date)}</h2>
+        <p class="featured-desc">Lady Whistledown's daily intelligence briefing — sharp takes on AI, technology, and the social scene. Ruthlessly curated. Delivered fresh.</p>
+        ${buildPlayer('./daily/voice/' + ep.file, 'featured')}
+      `;
+
+      initPlayer('./daily/voice/' + ep.file, 'featured', null);
+
+      observer.observe(container);
+    }
+
+    // ── RENDER EPISODE GRID ────────────────────────────────────────
+    function renderGrid(episodes) {
+      const grid = document.getElementById('episodes-grid');
+      if (!grid || !episodes.length) return;
+
+      grid.innerHTML = episodes.map((ep, i) => {
+        const playerId = `ep-${i}`;
+        return `
+          <div class="episode-card reveal" id="card-${playerId}" style="transition-delay:${i * 40}ms">
+            <div class="ep-date">${formatDateShort(ep.date)}</div>
+            <div class="ep-title">${ep.label || formatDateShort(ep.date)}</div>
+            <div class="ep-footer">
+              <span class="ep-day">${formatDayName(ep.date)}</span>
+              <span class="ep-play-icon" id="mini-play-${playerId}" role="button" aria-label="Play episode">
+                ${makeSmallPlayIcon()}
+              </span>
+            </div>
+          </div>`;
+      }).join('');
+
+      // observe for scroll reveal
+      grid.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+      // set up mini play buttons
+      episodes.forEach((ep, i) => {
+        const playerId = `ep-${i}`;
+        const card = document.getElementById(`card-${playerId}`);
+        const miniBtn = document.getElementById(`mini-play-${playerId}`);
+        const src = './daily/voice/' + ep.file;
+
+        if (!miniBtn || !card) return;
+
+        let audio = null;
+
+        function ensureAudio() {
+          if (!audio) {
+            audio = new Audio(src);
+            audio.preload = 'metadata';
+            audio.addEventListener('ended', () => {
+              miniBtn.innerHTML = makeSmallPlayIcon();
+              card.classList.remove('active');
+            });
+          }
+          return audio;
+        }
+
+        function makeMiniPause() {
+          return `<svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><rect x="1.5" y="1" width="2.5" height="8" rx="0.8"/><rect x="6" y="1" width="2.5" height="8" rx="0.8"/></svg>`;
+        }
+
+        miniBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const a = ensureAudio();
+
+          if (activeAudio && activeAudio !== a) {
+            activeAudio.pause();
+            if (activePlayBtn) activePlayBtn.innerHTML = makePlayIcon();
+            document.querySelectorAll('.episode-card.active').forEach(c => c.classList.remove('active'));
+          }
+
+          if (a.paused) {
+            a.play();
+            miniBtn.innerHTML = makeMiniPause();
+            activeAudio = a;
+            activePlayBtn = { innerHTML: '' }; // dummy to avoid errors
+            card.classList.add('active');
+          } else {
+            a.pause();
+            miniBtn.innerHTML = makeSmallPlayIcon();
+            activeAudio = null;
+            card.classList.remove('active');
+          }
+        });
+
+        // clicking the card also triggers play
+        card.addEventListener('click', () => miniBtn.click());
+      });
+    }
+
+    // ── SUBSCRIBE FORM ─────────────────────────────────────────────
+    window.handleSubscribe = function (e) {
+      e.preventDefault();
+      const email = document.getElementById('subscribe-email').value.trim();
+      if (!email) return false;
+
+      const subject = encodeURIComponent('Subscribe: Decaf Daily Intelligencer');
+      const body = encodeURIComponent(`Please subscribe me to The Daily Intelligencer.\n\nEmail: ${email}`);
+      window.location.href = `mailto:sancho.v.navarro@gmail.com?subject=${subject}&body=${body}`;
+      return false;
+    };
+
+    // ── FETCH MANIFEST + RENDER ────────────────────────────────────
     (async function () {
-      const container = document.getElementById('episodes');
       try {
         const res = await fetch('./daily/voice/manifest.json');
         if (!res.ok) throw new Error(res.statusText);
@@ -358,30 +1074,32 @@
         const episodes = (data.episodes || []).sort((a, b) => b.date.localeCompare(a.date));
 
         if (!episodes.length) {
-          container.innerHTML = '<p class="empty">No dispatches yet.</p>';
+          document.getElementById('featured-card').innerHTML = '<p style="color:var(--text3);text-align:center;padding:2rem;">No dispatches yet.</p>';
           return;
         }
 
-        container.innerHTML = episodes.map((ep, i) => {
-          const d = new Date(ep.date + 'T12:00:00');
-          const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-          const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-          const dateline = `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} · San Francisco`.toUpperCase();
+        // Featured = most recent
+        renderFeatured(episodes[0]);
 
-          return `
-            <div class="episode${i === 0 ? ' featured' : ''}">
-              <div class="seal">W</div>
-              <div class="episode-dateline">${dateline}</div>
-              <audio controls ${i === 0 ? 'preload="auto"' : 'preload="none"'}>
-                <source src="./daily/voice/${ep.file}" type="audio/mpeg">
-              </audio>
-            </div>
-          `;
-        }).join('');
-      } catch (e) {
-        container.innerHTML = '<p class="empty">Could not load dispatches.</p>';
+        // Archive = rest
+        const rest = episodes.slice(1);
+        if (rest.length) {
+          renderGrid(rest);
+        } else {
+          document.getElementById('episodes-grid').innerHTML = '<p style="color:var(--text3);font-size:0.9rem;">More dispatches coming soon.</p>';
+        }
+
+      } catch (err) {
+        const fc = document.getElementById('featured-card');
+        if (fc) {
+          fc.className = 'featured-card';
+          fc.innerHTML = '<p style="color:var(--text3);text-align:center;padding:2rem;">Could not load dispatches.</p>';
+        }
+        console.error('Manifest load error:', err);
       }
     })();
+
+  })();
   </script>
 </body>
 </html>
