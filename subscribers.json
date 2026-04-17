@@ -1,6 +1,19 @@
 {
   "subscribers": [
-    {"email": "rowantrollope@gmail.com", "name": "Rowan", "added": "2026-04-13"},
-    {"email": "christina.meng88@gmail.com", "name": "Christina", "added": "2026-04-13"}
+    {
+      "email": "kristina@chemistry.vc",
+      "name": "Kristina",
+      "added": "2026-04-17"
+    },
+    {
+      "email": "rowantrollope@gmail.com",
+      "name": "Rowan",
+      "added": "2026-04-13"
+    },
+    {
+      "email": "christina.meng88@gmail.com",
+      "name": "Christina",
+      "added": "2026-04-13"
+    }
   ]
 }
