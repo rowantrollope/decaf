@@ -1,6 +1,11 @@
 {
   "episodes": [
     {
+      "date": "2026-06-01",
+      "label": "June 1, 2026",
+      "file": "daily-06-01-26.mp3"
+    },
+    {
       "date": "2026-05-31",
       "label": "May 31, 2026",
       "file": "daily-05-31-26.mp3"
